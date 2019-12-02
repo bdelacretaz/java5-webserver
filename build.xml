@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+	Ant build file for funWS - a simplistic Java5 web server
+-->
+
+<project name="funws" default="run" basedir=".">
+
+  <property name="src.dir" value="src" />
+  <property name="build.dir" value="build" />
+  <property name="build.classes.dir" value="${build.dir}/classes" />
+  <property name="build.dist.dir" value="${build.dir}/dist" />
+  <property name="build.javadoc.dir" value="${build.dir}/javadoc" />
+
+	<!-- Keep this value in sync with the ServerVersion class -->
+  <property name="version.info" value="2006-11-16" />
+
+  <property name="server.port" value="9876" />
+  <property name="server.threads" value="5" />
+
+    <property 
+    name="jar.file" 
+    value="${build.dist.dir}/${ant.project.name}.${version.info}.jar" />
+
+  <target name="compile">
+    <mkdir dir="${build.classes.dir}" />
+    <javac 
+      srcdir="${src.dir}" 
+      destdir="${build.classes.dir}" 
+      debug="true" />
+  </target>
+
+  <target name="jar" depends="compile">
+    <mkdir dir="${build.dist.dir}" />
+    <jar 
+      jarfile="${jar.file}" 
+      basedir="${build.classes.dir}" />
+  </target>
+
+  <target name="run" depends="jar" description="Run the web server">
+    <path id="test.classpath">
+      <pathelement path="${jar.file}" />
+    </path>
+
+    <java 
+      classname="ch.codeconsult.funws.StartServer" 
+      classpathref="test.classpath" 
+      fork="yes">
+      <arg value="${server.port}" />
+      <arg value="${server.threads}" />
+    </java>
+  </target>
+
+  <target name="clean">
+    <delete dir="${build.dir}" />
+  </target>
+
+  <target name="javadoc" description="create the ${ant.project.name} java API docs">
+    <mkdir dir="${build.javadoc.dir}" />
+    <javadoc 
+      packagenames="ch.codeconsult.*" 
+      sourcepath="${src.dir}" 
+      destdir="${build.javadoc.dir}" 
+      author="true" 
+      version="true" 
+      use="false" 
+      noindex="true" 
+      windowtitle="${ant.project.name} ${version.info} API" 
+      doctitle="${ant.project.name}" 
+      package="true" />
+  </target>
+
+</project>
